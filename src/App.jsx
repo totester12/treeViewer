@@ -1,125 +1,124 @@
-import { useState, useEffect } from "react";
-import * as d3 from "d3";
-import "./App.css";
+import React, { useCallback, useState, useEffect } from 'react';
+import {
+  ReactFlow,
+  MiniMap,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+} from '@xyflow/react';
 
-const initialData = {
-  name: "Business",
-  children: [
-    { name: "Department A", value: 95 },
-    { name: "Department B", value: 87 },
-    {
-      name: "Department C",
-      children: [
-        { name: "Team C1", value: 92 },
-        { name: "Team C2", value: 78 },
-      ],
-    },
-  ],
+import './app.css';
+import '@xyflow/react/dist/style.css';
+
+const pastelGreen = [10, 80, 40]; // RGB forrgb(10, 83, 47)
+const pastelRed = [100, 10, 10];   // RGB forrgb(112, 11, 11)
+
+const initialNodes = [
+  { id: '1', position: { x: 0, y: 0 }, data: { label: 'College' }, value: 20 },
+  { id: '2', position: { x: 0, y: 100 }, data: { label: 'Maths' }, value: 60 },
+  { id: '3', position: { x: 0, y: 200 }, data: { label: 'Science' }, value: 90 },
+];
+
+const initialEdges = [
+  { id: 'e1-2', source: '1', target: '2' },
+  { id: 'e1-3', source: '1', target: '3' }
+];
+
+// More aggressive color transition calculation
+const getNodeColor = (nodeValue, sliderValue) => {
+  if (nodeValue >= sliderValue) return `rgb(${pastelGreen.join(',')})`; // Full green quickly
+
+  // More aggressive transition to red (quadratic effect)
+  let blendFactor = (sliderValue - nodeValue) / sliderValue;
+  blendFactor = blendFactor ** 2; // Quadratic effect for harsher transition
+
+  return `rgb(
+    ${Math.round(pastelGreen[0] + (pastelRed[0] - pastelGreen[0]) * blendFactor)},
+    ${Math.round(pastelGreen[1] + (pastelRed[1] - pastelGreen[1]) * blendFactor)},
+    ${Math.round(pastelGreen[2] + (pastelRed[2] - pastelGreen[2]) * blendFactor)}
+  )`;
 };
 
 export default function App() {
-  const [data, setData] = useState(initialData);
-  const [threshold, setThreshold] = useState(90);
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    initialNodes.map((node) => ({
+      ...node,
+      data: { label: `${node.data.label} (${node.value})` }, // Label includes value
+      style: { backgroundColor: getNodeColor(node.value, 50) }, // Default threshold 50
+    }))
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodeName, setName] = useState("");
+  const [sliderValue, setSliderValue] = useState(50); // Default threshold
 
-  // Use green for above threshold, red for below threshold
-  const getColor = (value) => {
-    const difference = value - threshold;  // Calculate the difference from the threshold
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
 
-    let r, g, b;
-
-    if (difference > 0) {
-      // If the value is above the threshold, color towards green
-      r = 0; // Red stays at 0 for greenish color
-      g = Math.round(255 * (difference / (100 - threshold))); // Gradually increase green
-      b = 0; // Blue stays at 0
-    } else {
-      // If the value is below the threshold, color towards red
-      r = Math.round(255 * (-difference / threshold)); // Gradually increase red
-      g = 0; // Green stays at 0
-      b = 0; // Blue stays at 0
+  function addNewNode(nodeName) {
+    if (!nodeName.trim()) {
+      alert("Node name cannot be empty!");
+      return;
     }
+    const randomValue = Math.floor(Math.random() * 100); // Random value for new node
+    const newNode = {
+      id: String(Date.now()),
+      position: { x: 0, y: nodes.length * 100 },
+      data: { label: `${nodeName} (${randomValue})` }, // Label includes value
+      value: randomValue,
+      style: { backgroundColor: getNodeColor(randomValue, sliderValue) }, // Apply color based on threshold
+    };
+    setNodes([...nodes, newNode]);
+    setName("");
+  }
 
-    return `rgb(${r}, ${g}, ${b})`;
-  };
-
+  // Update all node colors & labels when slider changes
   useEffect(() => {
-    const width = 900;
-    const height = 600;
-
-    const svg = d3
-      .select("#tree-container")
-      .html("")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(50,50)");
-
-    const root = d3.hierarchy(data);
-    const treeLayout = d3.tree().size([width - 100, height - 150]);
-    treeLayout(root);
-
-    // Create the lines (no transitions here)
-    svg
-      .selectAll("path")
-      .data(root.links())
-      .enter()
-      .append("path")
-      .attr("d", d3.linkVertical()
-        .x((d) => d.x)
-        .y((d) => d.y))
-      .attr("fill", "none")
-      .attr("stroke", "#ddd") // Lighter line color
-      .attr("stroke-width", 1.5);
-
-    // Create the nodes with modern ShadCN-inspired design
-    svg
-      .selectAll("foreignObject")
-      .data(root.descendants())
-      .enter()
-      .append("foreignObject")
-      .attr("x", (d) => d.x - 70)
-      .attr("y", (d) => d.y - 35)
-      .attr("width", 140)
-      .attr("height", 70)
-      .append("xhtml:div")
-      .style("width", "140px")
-      .style("height", "70px")
-      .style("border-radius", "16px") // Rounded corners for modern look
-      .style("background-color", (d) => getColor(d.data.value || 90)) // Use dynamic color
-      .style("display", "flex")
-      .style("align-items", "center")
-      .style("justify-content", "center")
-      .style("box-shadow", "0px 8px 16px rgba(0, 0, 0, 0.1)") // Softer, bigger shadow
-      .style("color", "#fff")
-      .style("font-family", "'Inter', sans-serif") // Modern font
-      .style("font-weight", "600")
-      .style("font-size", "16px")
-      .style("text-align", "center")
-      .style("transition", "background-color 0.3s ease-in-out") // Smooth background color change
-      .text((d) => `${d.data.name}\n${d.data.value || "N/A"}`);
-
-  }, [data, threshold]);
+    setNodes((nds) =>
+      nds.map((node) => ({
+        ...node,
+        data: { label: `${node.data.label.split(' ')[0]} (${node.value})` }, // Update label with current value
+        style: { backgroundColor: getNodeColor(node.value, sliderValue) },
+      }))
+    );
+  }, [sliderValue, setNodes]);
 
   return (
-    <div className="container">
-      <aside className="sidebar">
-        <h3>Controls</h3>
-        <label>Performance Threshold</label>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span>50</span>
-          <input
-            type="range"
-            min="50"
-            max="100"
-            value={threshold}
-            onChange={(e) => setThreshold(+e.target.value)}
-          />
-          <span>100</span>
-        </div>
-        <p>Current Threshold: {threshold}</p>
-      </aside>
-      <main className="tree-view" id="tree-container"></main>
+    <div style={{ width: '100vw', height: '100vh', padding: '10px' }}>
+      <input
+        type="text"
+        value={nodeName}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Enter node name"
+      />
+      <button onClick={() => addNewNode(nodeName)}>Add Node</button>
+
+      <div style={{ marginTop: '10px' }}>
+        <label>Threshold Slider:</label>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={sliderValue}
+          onChange={(e) => setSliderValue(Number(e.target.value))}
+        />
+        <span> {sliderValue}</span>
+      </div>
+
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+      >
+        <Controls />
+        <MiniMap />
+        <Background variant="dots" gap={12} size={1} />
+      </ReactFlow>
     </div>
   );
 }
