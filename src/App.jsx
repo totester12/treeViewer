@@ -12,6 +12,8 @@ import {
 import './app.css';
 import '@xyflow/react/dist/style.css';
 
+
+
 const pastelGreen = [180, 240, 200];
 const pastelRed = [240, 150, 150];
 const transitionRange = 10;
@@ -90,41 +92,62 @@ const getNodeColor = (nodeValue, sliderValue) => {
   )`;
 };
 
-const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode }) => (
-  <div className="bg-white w-72 p-6 border-r border-gray-200 h-screen shadow-lg">
-    <h2 className="text-2xl font-semibold mb-6">Controls</h2>
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Add New Node</label>
-        <input
-          type="text"
-          value={nodeName}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter node name"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button 
-          onClick={() => addNewNode(nodeName)}
-          className="w-full mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-md"
-        >
-          Add Node
-        </button>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Threshold: {sliderValue}</label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={sliderValue}
-          onChange={(e) => setSliderValue(Number(e.target.value))}
-          className="w-full cursor-pointer"
-        />
+const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode }) => {
+  const [dropdownValue, setDropdownValue] = useState("option1");
+
+  const handleDropdownChange = (e) => {
+    setDropdownValue(e.target.value);
+  };
+
+  return (
+    <div className="bg-white w-72 p-6 border-r border-gray-200 h-screen shadow-lg">
+      <h2 className="text-2xl font-semibold mb-6">Controls</h2>
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Add New Node</label>
+          <input
+            type="text"
+            value={nodeName}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter node name"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={() => addNewNode(nodeName)}
+            className="w-full mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-md"
+          >
+            Add Node
+          </button>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Threshold: {sliderValue}</label>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={sliderValue}
+            onChange={(e) => setSliderValue(Number(e.target.value))}
+            className="w-full cursor-pointer"
+          />
+        </div>
+
+        {/* New Dropdown below the existing controls */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Option</label>
+          <select
+            value={dropdownValue}
+            onChange={handleDropdownChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="option1">Attendance</option>
+            <option value="option2">Achievement</option>
+            <option value="option3"></option>
+          </select>
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
+};
 export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(
     initialNodes.map((node) => ({
@@ -179,7 +202,7 @@ export default function App() {
     setNodes((nds) =>
       nds.map((node) => ({
         ...node,
-        data: { label: `${node.data.label.split(' ')[0]} (${node.value})` },
+        data: { label: `${node.data.label.split('(')[0]}  (${node.value})` },
         style: {
           backgroundColor: getNodeColor(node.value, sliderValue),
           borderRadius: '6px',
