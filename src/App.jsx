@@ -82,11 +82,11 @@ const initialEdges = [
   { id: 'e18-25', source: '18', target: '25' },
 ];
 
-const getNodeColor = (nodeValue, sliderValue, baseColour,failColour) => {
+const getNodeColor = (nodeValue, sliderValue, baseColour,failColour,transRange) => {
   const diff = nodeValue - sliderValue;
-  if (diff >= transitionRange) return `rgb(${baseColour.join(',')})`;
-  if (diff <= -transitionRange) return `rgb(${failColour.join(',')})`;
-  const blendFactor = (diff + transitionRange) / (2 * transitionRange);
+  if (diff >= transRange) return `rgb(${baseColour.join(',')})`;
+  if (diff <= -transRange) return `rgb(${failColour.join(',')})`;
+  const blendFactor = (diff + transRange) / (2 * transRange);
   return `rgb(
     ${Math.round(failColour[0] + (baseColour[0] - failColour[0]) * blendFactor)},
     ${Math.round(failColour[1] + (baseColour[1] - failColour[1]) * blendFactor)},
@@ -94,7 +94,7 @@ const getNodeColor = (nodeValue, sliderValue, baseColour,failColour) => {
   )`;
 };
 
-const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood,setFail }) => {
+const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood,setFail,setTrans }) => {
 
   function hexToRgb(hex) {
     return hex.match(/[A-Za-z0-9]{2}/g).map((v) => parseInt(v, 16))
@@ -179,14 +179,17 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
               </label>
               {isAdvancedOpen && (
                 <div className="mt-2">
-                  <label className='block text-sm font-medium text-gray-700'>Threshold Options in here</label>
-                  <label className='pb-1 pt-2 font-medium text-gray-700'>Positive Colour</label>
+                  <label className='block text-sm font-medium text-gray-700'>Threshold Boundary</label>
+                  <input className='pt-2 pb-2 text-sm text-gray-700'type='number' defaultValue={10} onChange={(e)=>setTrans(Number(e.target.value))} ></input>
+                  <br/>
+                  <label className='pb-1 pt-6 font-medium text-gray-700'>Positive Colour</label>
                   <br/>
                   <input type='color' defaultValue="#b4f0c8" onChange={(e)=>setGood(hexToRgb(e.target.value))} ></input>
                   <br/>
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Negative Colour</label>
                   <br/>
                   <input type='color' defaultValue="#f09696" onChange={(e)=>setFail(hexToRgb(e.target.value))} ></input>
+                 
                 </div>
               )}
             </div>
@@ -217,7 +220,7 @@ export default function App() {
         value: node.value
       },
       style: {
-        backgroundColor: getNodeColor(node.value, 50,baseColour,failColour),
+        backgroundColor: getNodeColor(node.value, 50,baseColour,failColour,transRange),
         borderRadius: '0.75rem',
         padding: '0.75rem',
         minWidth: '160px',
@@ -266,7 +269,7 @@ export default function App() {
             value: randomValue // Store the random value in data.value
           },
           style: {
-            backgroundColor: getNodeColor(randomValue, sliderValue,baseColour,failColour),
+            backgroundColor: getNodeColor(randomValue, sliderValue,baseColour,failColour,transRange),
             borderRadius: '0.75rem',
             padding: '0.75rem',
             minWidth: '160px',
@@ -298,7 +301,7 @@ export default function App() {
         value: randomValue
       },
       style: {
-        backgroundColor: getNodeColor(randomValue, sliderValue,baseColour,failColour),
+        backgroundColor: getNodeColor(randomValue, sliderValue,baseColour,failColour,transRange),
         borderRadius: '0.75rem',
         padding: '0.75rem',
         minWidth: '160px',
@@ -327,7 +330,7 @@ export default function App() {
           value: node.data.value
         },
         style: {
-          backgroundColor: getNodeColor(node.data.value, sliderValue,baseColour,failColour),
+          backgroundColor: getNodeColor(node.data.value, sliderValue,baseColour,failColour,transRange),
           borderRadius: '0.75rem',
           padding: '0.75rem',
           minWidth: '160px',
@@ -338,7 +341,7 @@ export default function App() {
         },
       }))
     );
-  }, [sliderValue,baseColour,failColour, setNodes]);
+  }, [sliderValue,baseColour,failColour,transRange, setNodes]);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -351,6 +354,7 @@ export default function App() {
         randValues={randValues}
         setGood={setBaseColour}
         setFail={setFailColour}
+        setTrans={setTransitionRange}
       />
 
       <div className="flex-1 h-screen">
