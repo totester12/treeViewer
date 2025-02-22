@@ -18,36 +18,38 @@ const pastelGreen = [180, 240, 200];
 const pastelRed = [240, 150, 150];
 const transitionRange = 10;
 
+
+
 const initialNodes = [
-  { id: '1', position: { x: 500, y: 0 }, data: { label: 'College' }, value: 50 },
+  { id: '1', position: { x: 500, y: 0 }, data: { label: 'College' }, value: 60, teacher: 'John' },
 
-  { id: '2', position: { x: 250, y: 100 }, data: { label: 'Sciences' }, value: 60 },
-  { id: '3', position: { x: 750, y: 100 }, data: { label: 'Arts' }, value: 55 },
-  { id: '4', position: { x: 1250, y: 100 }, data: { label: 'Engineering' }, value: 65 },
+  { id: '2', position: { x: 250, y: 100 }, data: { label: 'Sciences' }, value: 60, teacher: 'Alice' },
+  { id: '3', position: { x: 750, y: 100 }, data: { label: 'Arts' }, value: 55, teacher: 'Bruno' },
+  { id: '4', position: { x: 1250, y: 100 }, data: { label: 'Engineering' }, value: 65, teacher: 'Chloe' },
 
-  { id: '5', position: { x: 150, y: 200 }, data: { label: 'Math' }, value: 70 },
-  { id: '6', position: { x: 350, y: 200 }, data: { label: 'Physics' }, value: 75 },
-  { id: '7', position: { x: 550, y: 200 }, data: { label: 'Biology' }, value: 80 },
-  { id: '8', position: { x: 750, y: 200 }, data: { label: 'History' }, value: 50 },
-  { id: '9', position: { x: 950, y: 200 }, data: { label: 'Philosophy' }, value: 45 },
-  { id: '10', position: { x: 1250, y: 200 }, data: { label: 'Computer Science' }, value: 85 },
-  { id: '11', position: { x: 1450, y: 200 }, data: { label: 'Mechanical Eng' }, value: 78 },
+  { id: '5', position: { x: 150, y: 200 }, data: { label: 'Math' }, value: 70, teacher: 'David' },
+  { id: '6', position: { x: 350, y: 200 }, data: { label: 'Physics' }, value: 75, teacher: 'Elena' },
+  { id: '7', position: { x: 550, y: 200 }, data: { label: 'Biology' }, value: 80, teacher: 'Felix' },
+  { id: '8', position: { x: 750, y: 200 }, data: { label: 'History' }, value: 50, teacher: 'Grace' },
+  { id: '9', position: { x: 950, y: 200 }, data: { label: 'Philosophy' }, value: 45, teacher: 'Henry' },
+  { id: '10', position: { x: 1250, y: 200 }, data: { label: 'Computer Science' }, value: 85, teacher: 'Jonah' },
+  { id: '11', position: { x: 1450, y: 200 }, data: { label: 'Mechanical Eng' }, value: 78, teacher: 'Kelly' },
 
-  { id: '12', position: { x: 100, y: 300 }, data: { label: 'Calculus' }, value: 72 },
-  { id: '13', position: { x: 300, y: 300 }, data: { label: 'Quantum Mechanics' }, value: 82 },
-  { id: '14', position: { x: 500, y: 300 }, data: { label: 'Biochemistry' }, value: 79 },
-  { id: '15', position: { x: 700, y: 300 }, data: { label: 'Ancient History' }, value: 53 },
-  { id: '16', position: { x: 900, y: 300 }, data: { label: 'Ethics' }, value: 47 },
-  { id: '17', position: { x: 1200, y: 300 }, data: { label: 'Software Eng' }, value: 88 },
-  { id: '18', position: { x: 1400, y: 300 }, data: { label: 'Thermodynamics' }, value: 76 },
+  { id: '12', position: { x: 100, y: 300 }, data: { label: 'Calculus' }, value: 72, teacher: 'Liam' },
+  { id: '13', position: { x: 300, y: 300 }, data: { label: 'Quantum Mechanics' }, value: 82, teacher: 'Molly' },
+  { id: '14', position: { x: 500, y: 300 }, data: { label: 'Biochemistry' }, value: 79, teacher: 'Nolan' },
+  { id: '15', position: { x: 700, y: 300 }, data: { label: 'Ancient History' }, value: 53, teacher: 'Olive' },
+  { id: '16', position: { x: 900, y: 300 }, data: { label: 'Ethics' }, value: 47, teacher: 'Pete' },
+  { id: '17', position: { x: 1200, y: 300 }, data: { label: 'Software Eng' }, value: 88, teacher: 'Barry' },
+  { id: '18', position: { x: 1400, y: 300 }, data: { label: 'Thermodynamics' }, value: 76, teacher: 'Bill' },
 
-  { id: '19', position: { x: 100, y: 400 }, data: { label: 'Integration' }, value: 68 },
-  { id: '20', position: { x: 300, y: 400 }, data: { label: 'Relativity' }, value: 85 },
-  { id: '21', position: { x: 500, y: 400 }, data: { label: 'Genetics' }, value: 78 },
-  { id: '22', position: { x: 700, y: 400 }, data: { label: 'Medieval History' }, value: 50 },
-  { id: '23', position: { x: 900, y: 400 }, data: { label: 'Moral Philosophy' }, value: 52 },
-  { id: '24', position: { x: 1200, y: 400 }, data: { label: 'Data Structures' }, value: 90 },
-  { id: '25', position: { x: 1400, y: 400 }, data: { label: 'Fluid Mechanics' }, value: 74 },
+  { id: '19', position: { x: 100, y: 400 }, data: { label: 'Integration' }, value: 68, teacher: 'Simon' },
+  { id: '20', position: { x: 300, y: 400 }, data: { label: 'Relativity' }, value: 85, teacher: 'Pete' },
+  { id: '21', position: { x: 500, y: 400 }, data: { label: 'Genetics' }, value: 78, teacher: 'Mike' },
+  { id: '22', position: { x: 700, y: 400 }, data: { label: 'Medieval History' }, value: 50, teacher: 'Matthew' },
+  { id: '23', position: { x: 900, y: 400 }, data: { label: 'Moral Philosophy' }, value: 52, teacher: 'Ned' },
+  { id: '24', position: { x: 1200, y: 400 }, data: { label: 'Data Structures' }, value: 90, teacher: 'Oscar' },
+  { id: '25', position: { x: 1400, y: 400 }, data: { label: 'Fluid Mechanics' }, value: 74, teacher: 'Kevin' },
 ];
 
 const initialEdges = [
@@ -92,79 +94,140 @@ const getNodeColor = (nodeValue, sliderValue) => {
   )`;
 };
 
-const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode }) => {
-  const [dropdownValue, setDropdownValue] = useState("option1");
+const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood,setFail }) => {
 
-  const handleDropdownChange = (e) => {
-    setDropdownValue(e.target.value);
-  };
-
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   return (
-    <div className="bg-white w-72 p-6 border-r border-gray-200 h-screen shadow-lg">
-      <h2 className="text-2xl font-semibold mb-6">Controls</h2>
+    <div className="w-80 h-screen bg-white border-r border-gray-200 p-6 shadow-lg">
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Add New Node</label>
-          <input
-            type="text"
-            value={nodeName}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter node name"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={() => addNewNode(nodeName)}
-            className="w-full mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-md"
-          >
-            Add Node
-          </button>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Threshold: {sliderValue}</label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={sliderValue}
-            onChange={(e) => setSliderValue(Number(e.target.value))}
-            className="w-full cursor-pointer"
-          />
+          <h2 className="text-2xl font-semibold text-gray-900">Provider Health</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            View your college performance
+          </p>
         </div>
 
-        {/* New Dropdown below the existing controls */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Select Option</label>
-          <select
-            value={dropdownValue}
-            onChange={handleDropdownChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="option1">Attendance</option>
-            <option value="option2">Achievement</option>
-            <option value="option3"></option>
-          </select>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Add New Node
+            </label>
+            <input
+              type="text"
+              value={nodeName}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter node name"
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+
+
+            <button
+              onClick={() => addNewNode(nodeName)}
+              className="w-full mt-2 bg-slate-500 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors duration-200 font-medium shadow-sm"
+            >
+              Add Node
+            </button>
+            <label className="block text-sm font-medium text-gray-700 pt-4">
+              Choose Metric
+            </label>
+            <select
+              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent"
+              onChange={() => randValues()}
+            >
+              <option value="">Performance Indicator</option>
+              <option value="metric1">Attendance</option>
+              <option value="metric2">Achievement</option>
+              <option value="metric3">Withdrawal Rate</option>
+            </select>
+          </div>
+
+          <div className="space-y-2 pt-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Threshold (%) : {sliderValue}
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={sliderValue}
+              onChange={(e) => setSliderValue(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            />
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <div>
+              <label
+                className="block text-sm font-medium text-gray-700 pt-4 cursor-pointer flex items-center"
+                onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
+              >
+                Advanced
+                <span className="ml-2">
+                  <svg
+                    className={`w-4 h-4 transform transition-transform ${isAdvancedOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </label>
+              {isAdvancedOpen && (
+                <div className="mt-2">
+                  <label className='block text-sm font-medium text-gray-700'>Threshold Options in here</label>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default function App() {
+
+  const [baseColour, setBaseColour] = useState([180, 240, 200]);
+  const [failColour, setFailColour] = useState([240, 150, 150]);
+  const [transRange, setTransitionRange] = useState(10);
+
+
   const [nodes, setNodes, onNodesChange] = useNodesState(
     initialNodes.map((node) => ({
       ...node,
-      data: { label: node.data.label, value: node.value },
-      style: { 
+      data: {
+        label: (
+          <div className="flex flex-col">
+            <div className="font-medium">{node.data.label}</div>
+            <div className="text-sm mt-1">{node.value}%</div>
+          </div>
+        ),
+        value: node.value
+      },
+      style: {
         backgroundColor: getNodeColor(node.value, 50),
-        borderRadius: '6px',
-        padding: '10px',
+        borderRadius: '0.75rem',
+        padding: '0.75rem',
+        minWidth: '160px',
         textAlign: 'left',
-        color: 'white',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.1)',
+        color: '#1a1a1a',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
       },
     }))
   );
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    initialEdges.map(edge => ({
+      ...edge,
+      style: {
+        stroke: '#94a3b8',
+        strokeWidth: 2,
+      },
+    }))
+  );
+
   const [nodeName, setName] = useState("");
   const [sliderValue, setSliderValue] = useState(50);
 
@@ -173,6 +236,38 @@ export default function App() {
     [setEdges]
   );
 
+  function randValues() {
+    setNodes((nds) =>
+      nds.map((node) => {
+        const randomValue = Math.floor(Math.random() * 100); // Generate random value for each node
+        return {
+          ...node,
+          data: {
+            label: (
+              <div className="flex flex-col">
+                <div className="font-medium">
+                  {node.data.label.props?.children[0].props?.children || node.data.label}
+                </div>
+                <div className="font-medium mt-1">{randomValue}%</div>
+                <div className="mt-1 font-medium">{node.teacher}</div>
+              </div>
+            ),
+            value: randomValue // Store the random value in data.value
+          },
+          style: {
+            backgroundColor: getNodeColor(randomValue, sliderValue),
+            borderRadius: '0.75rem',
+            padding: '0.75rem',
+            minWidth: '160px',
+            textAlign: 'left',
+            color: '#1a1a1a',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+          },
+        };
+      })
+    );
+  }
   function addNewNode(nodeName) {
     if (!nodeName.trim()) {
       alert("Node name cannot be empty!");
@@ -182,16 +277,24 @@ export default function App() {
     const newNode = {
       id: String(Date.now()),
       position: { x: 250, y: nodes.length * 100 },
-      data: { label: `${nodeName} (${randomValue})` },
-      value: randomValue,
+      data: {
+        label: (
+          <div className="flex flex-col">
+            <div className="font-medium">{nodeName}</div>
+            <div className="text-sm mt-1">{randomValue}%</div>
+          </div>
+        ),
+        value: randomValue
+      },
       style: {
         backgroundColor: getNodeColor(randomValue, sliderValue),
-        borderRadius: '6px',
-        padding: '10px',
+        borderRadius: '0.75rem',
+        padding: '0.75rem',
+        minWidth: '160px',
         textAlign: 'left',
-        color: 'green',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.1)',
+        color: '#1a1a1a',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
       },
     };
     setNodes([...nodes, newNode]);
@@ -202,31 +305,44 @@ export default function App() {
     setNodes((nds) =>
       nds.map((node) => ({
         ...node,
-        data: { label: `${node.data.label.split('(')[0]}  (${node.value})` },
+        data: {
+          label: (
+            <div className="flex flex-col">
+              <div className="font-medium">{node.data.label.props?.children[0].props?.children || node.data.label}</div>
+              <div className="font-medium mt-1">{node.data.value}%</div>
+              <div className='mt-1 font-medium'>{node.teacher}</div>
+            </div>
+          ),
+          value: node.data.value
+        },
         style: {
-          backgroundColor: getNodeColor(node.value, sliderValue),
-          borderRadius: '6px',
-          padding: '10px',
+          backgroundColor: getNodeColor(node.data.value, sliderValue),
+          borderRadius: '0.75rem',
+          padding: '0.75rem',
+          minWidth: '160px',
           textAlign: 'left',
-          color: 'black',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.1)',
+          color: '#1a1a1a',
+          border: '1px solid rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
         },
       }))
     );
   }, [sliderValue, setNodes]);
 
   return (
-    <div className="flex h-screen">
-      <SideMenu 
+    <div className="flex h-screen bg-gray-50">
+      <SideMenu
         nodeName={nodeName}
         setName={setName}
         sliderValue={sliderValue}
         setSliderValue={setSliderValue}
         addNewNode={addNewNode}
+        randValues={randValues}
+        setGood={setBaseColour}
+        setFail={setFailColour}
       />
-      
-      <div className="flex-1 bg-gray-50 h-screen p-4">
+
+      <div className="flex-1 h-screen">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -235,9 +351,14 @@ export default function App() {
           onConnect={onConnect}
           fitView
         >
-          <Controls />
-          <MiniMap />
-          <Background variant="dots" gap={12} size={1} />
+          <Controls className="bg-white border border-gray-200 shadow-sm rounded-lg" />
+          <MiniMap className="bg-white border border-gray-200 shadow-sm rounded-lg" />
+          <Background
+            variant="dots"
+            gap={12}
+            size={1}
+            color="#94a3b8"
+          />
         </ReactFlow>
       </div>
     </div>
