@@ -14,12 +14,6 @@ import '@xyflow/react/dist/style.css';
 
 
 
-const pastelGreen = [180, 240, 200];
-const pastelRed = [240, 150, 150];
-const transitionRange = 10;
-
-
-
 const initialNodes = [
   { id: '1', position: { x: 500, y: 0 }, data: { label: 'College' }, value: 60, teacher: 'John' },
 
@@ -95,7 +89,7 @@ const getNodeColor = (nodeValue, sliderValue, baseColour, failColour, transRange
 };
 
 
-const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood, setFail, setTrans }) => {
+const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood, setFail, setTrans,setFontColour }) => {
 
   function hexToRgb(hex) {
     return hex.match(/[A-Za-z0-9]{2}/g).map((v) => parseInt(v, 16))
@@ -191,6 +185,10 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Negative Colour</label>
                   <br />
                   <input type='color' defaultValue="#f09696" onChange={(e) => setFail(hexToRgb(e.target.value))} ></input>
+                  <br/>
+                  <label className='pb-1 pt-2 font-medium text-gray-700'>Invert Font Colour</label>
+                  <br/>
+                  <input type = 'checkbox' id = 'metric1' name = 'metric' value = 'metric1' onClick={(e)=>setFontColour((e.target.checked==true) ? '#ffffff':'#1a1a1a')}/>
 
                 </div>
               )}
@@ -221,6 +219,7 @@ export default function App() {
   const [baseColour, setBaseColour] = useState([180, 240, 200]);
   const [failColour, setFailColour] = useState([240, 150, 150]);
   const [transRange, setTransitionRange] = useState(10);
+  const [fontColour, setFontColour] = useState('#1a1a1a');
 
   const [nodes, setNodes, onNodesChange] = useNodesState(
     initialNodes.map((node) => ({
@@ -241,7 +240,7 @@ export default function App() {
         padding: '0.75rem',
         minWidth: '160px',
         textAlign: 'left',
-        color: '#1a1a1a',
+        color: fontColour,
         border: '1px solid rgba(0, 0, 0, 0.1)',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
       },
@@ -310,7 +309,7 @@ export default function App() {
             padding: '0.75rem',
             minWidth: '160px',
             textAlign: 'left',
-            color: '#1a1a1a',
+            color:fontColour,
             border: '1px solid rgba(0, 0, 0, 0.1)',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
           },
@@ -344,7 +343,7 @@ export default function App() {
         padding: '0.75rem',
         minWidth: '160px',
         textAlign: 'left',
-        color: '#1a1a1a',
+        color: fontColour,
         border: '1px solid rgba(0, 0, 0, 0.1)',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
       },
@@ -373,13 +372,15 @@ export default function App() {
           padding: '0.75rem',
           minWidth: '160px',
           textAlign: 'left',
-          color: '#1a1a1a',
+          color: fontColour,
           border: '1px solid rgba(0, 0, 0, 0.1)',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
         },
       }))
     );
-  }, [sliderValue, baseColour, failColour, transRange, setNodes]);
+  }, [sliderValue, baseColour, failColour, transRange,fontColour, setNodes]);
+
+
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -393,6 +394,7 @@ export default function App() {
         setGood={setBaseColour}
         setFail={setFailColour}
         setTrans={setTransitionRange}
+        setFontColour={setFontColour}
       />
 
       <div className="flex-1 h-screen">
