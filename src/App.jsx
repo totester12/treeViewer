@@ -82,7 +82,7 @@ const initialEdges = [
   { id: 'e18-25', source: '18', target: '25' },
 ];
 
-const getNodeColor = (nodeValue, sliderValue, baseColour,failColour,transRange) => {
+const getNodeColor = (nodeValue, sliderValue, baseColour, failColour, transRange) => {
   const diff = nodeValue - sliderValue;
   if (diff >= transRange) return `rgb(${baseColour.join(',')})`;
   if (diff <= -transRange) return `rgb(${failColour.join(',')})`;
@@ -94,15 +94,17 @@ const getNodeColor = (nodeValue, sliderValue, baseColour,failColour,transRange) 
   )`;
 };
 
-const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood,setFail,setTrans }) => {
+
+const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood, setFail, setTrans }) => {
 
   function hexToRgb(hex) {
     return hex.match(/[A-Za-z0-9]{2}/g).map((v) => parseInt(v, 16))
   }
 
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+
   return (
-    <div className="w-80 h-screen bg-white border-r border-gray-200 p-6 shadow-lg">
+    <div className="w-80 h-screen bg-white border-r border-gray-300 p-6 shadow-xl">
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold text-gray-900">Provider Health</h2>
@@ -180,16 +182,16 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
               {isAdvancedOpen && (
                 <div className="mt-2">
                   <label className='block text-sm font-medium text-gray-700'>Threshold Boundary</label>
-                  <input className='pt-2 pb-2 text-sm text-gray-700'type='number' defaultValue={10} onChange={(e)=>setTrans(Number(e.target.value))} ></input>
-                  <br/>
+                  <input className='pt-2 pb-2 text-sm text-gray-700' type='number' defaultValue={10} onChange={(e) => setTrans(Number(e.target.value))} ></input>
+                  <br />
                   <label className='pb-1 pt-6 font-medium text-gray-700'>Positive Colour</label>
-                  <br/>
-                  <input type='color' defaultValue="#b4f0c8" onChange={(e)=>setGood(hexToRgb(e.target.value))} ></input>
-                  <br/>
+                  <br />
+                  <input type='color' defaultValue="#b4f0c8" onChange={(e) => setGood(hexToRgb(e.target.value))} ></input>
+                  <br />
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Negative Colour</label>
-                  <br/>
-                  <input type='color' defaultValue="#f09696" onChange={(e)=>setFail(hexToRgb(e.target.value))} ></input>
-                 
+                  <br />
+                  <input type='color' defaultValue="#f09696" onChange={(e) => setFail(hexToRgb(e.target.value))} ></input>
+
                 </div>
               )}
             </div>
@@ -200,16 +202,30 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
   );
 };
 
-export default function App() {
+const getDescendantIds = (nodeId, edges, visited = new Set()) => {
+  if (visited.has(nodeId)) return [];
+  visited.add(nodeId);
 
+  const descendants = [];
+  const directChildren = edges.filter(edge => edge.source === nodeId);
+
+  for (const edge of directChildren) {
+    descendants.push(edge.target);
+    descendants.push(...getDescendantIds(edge.target, edges, visited));
+  }
+
+  return descendants;
+};
+
+export default function App() {
   const [baseColour, setBaseColour] = useState([180, 240, 200]);
   const [failColour, setFailColour] = useState([240, 150, 150]);
   const [transRange, setTransitionRange] = useState(10);
 
-
   const [nodes, setNodes, onNodesChange] = useNodesState(
     initialNodes.map((node) => ({
       ...node,
+      hidden: false, // Add hidden property
       data: {
         label: (
           <div className="flex flex-col">
@@ -220,7 +236,7 @@ export default function App() {
         value: node.value
       },
       style: {
-        backgroundColor: getNodeColor(node.value, 50,baseColour,failColour,transRange),
+        backgroundColor: getNodeColor(node.value, 50, baseColour, failColour, transRange),
         borderRadius: '0.75rem',
         padding: '0.75rem',
         minWidth: '160px',
@@ -250,10 +266,30 @@ export default function App() {
     [setEdges]
   );
 
+  // Handle node click to toggle descendants visibility
+  const onNodeClick = useCallback((event, node) => {
+    const descendantIds = getDescendantIds(node.id, edges);
+    const shouldHide = !nodes.find(n => n.id === descendantIds[0])?.hidden;
+
+    setNodes(nds => nds.map(n => {
+      if (descendantIds.includes(n.id)) {
+        return { ...n, hidden: shouldHide };
+      }
+      return n;
+    }));
+
+    setEdges(eds => eds.map(e => {
+      if (descendantIds.includes(e.source) || descendantIds.includes(e.target)) {
+        return { ...e, hidden: shouldHide };
+      }
+      return e;
+    }));
+  }, [nodes, edges, setNodes, setEdges]);
+
   function randValues() {
     setNodes((nds) =>
       nds.map((node) => {
-        const randomValue = Math.floor(Math.random() * 100); // Generate random value for each node
+        const randomValue = Math.floor(Math.random() * 100);
         return {
           ...node,
           data: {
@@ -266,10 +302,10 @@ export default function App() {
                 <div className="mt-1 font-medium">{node.teacher}</div>
               </div>
             ),
-            value: randomValue // Store the random value in data.value
+            value: randomValue
           },
           style: {
-            backgroundColor: getNodeColor(randomValue, sliderValue,baseColour,failColour,transRange),
+            backgroundColor: getNodeColor(randomValue, sliderValue, baseColour, failColour, transRange),
             borderRadius: '0.75rem',
             padding: '0.75rem',
             minWidth: '160px',
@@ -282,6 +318,7 @@ export default function App() {
       })
     );
   }
+
   function addNewNode(nodeName) {
     if (!nodeName.trim()) {
       alert("Node name cannot be empty!");
@@ -291,6 +328,7 @@ export default function App() {
     const newNode = {
       id: String(Date.now()),
       position: { x: 250, y: nodes.length * 100 },
+      hidden: false, // Add hidden property to new nodes
       data: {
         label: (
           <div className="flex flex-col">
@@ -301,7 +339,7 @@ export default function App() {
         value: randomValue
       },
       style: {
-        backgroundColor: getNodeColor(randomValue, sliderValue,baseColour,failColour,transRange),
+        backgroundColor: getNodeColor(randomValue, sliderValue, baseColour, failColour, transRange),
         borderRadius: '0.75rem',
         padding: '0.75rem',
         minWidth: '160px',
@@ -330,8 +368,8 @@ export default function App() {
           value: node.data.value
         },
         style: {
-          backgroundColor: getNodeColor(node.data.value, sliderValue,baseColour,failColour,transRange),
-          borderRadius: '0.75rem',
+          backgroundColor: getNodeColor(node.data.value, sliderValue, baseColour, failColour, transRange),
+          borderRadius: '0.35rem',
           padding: '0.75rem',
           minWidth: '160px',
           textAlign: 'left',
@@ -341,10 +379,10 @@ export default function App() {
         },
       }))
     );
-  }, [sliderValue,baseColour,failColour,transRange, setNodes]);
+  }, [sliderValue, baseColour, failColour, transRange, setNodes]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-100">
       <SideMenu
         nodeName={nodeName}
         setName={setName}
@@ -364,6 +402,7 @@ export default function App() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeClick={onNodeClick} // Add click handler
           fitView
         >
           <Controls className="bg-white border border-gray-200 shadow-sm rounded-lg" />
