@@ -89,7 +89,7 @@ const getNodeColor = (nodeValue, sliderValue, baseColour, failColour, transRange
 };
 
 
-const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood, setFail, setTrans,setFontColour }) => {
+const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood, setFail, setTrans, setFontColour, exportTree }) => {
 
   function hexToRgb(hex) {
     return hex.match(/[A-Za-z0-9]{2}/g).map((v) => parseInt(v, 16))
@@ -185,10 +185,18 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Negative Colour</label>
                   <br />
                   <input type='color' defaultValue="#f09696" onChange={(e) => setFail(hexToRgb(e.target.value))} ></input>
-                  <br/>
+                  <br />
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Invert Font Colour</label>
-                  <br/>
-                  <input type = 'checkbox' id = 'metric1' name = 'metric' value = 'metric1' onClick={(e)=>setFontColour((e.target.checked==true) ? '#ffffff':'#1a1a1a')}/>
+                  <br />
+                  <input type='checkbox' id='metric1' name='metric' value='metric1' onClick={(e) => setFontColour((e.target.checked == true) ? '#ffffff' : '#1a1a1a')} />
+                  <br />
+                  <button
+                    onClick={() => exportTree()}
+                    className="w-full mt-2 bg-slate-500 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors duration-200 font-medium shadow-sm"
+                  >
+                    Export Tree
+                  </button>
+
 
                 </div>
               )}
@@ -285,6 +293,37 @@ export default function App() {
     }));
   }, [nodes, edges, setNodes, setEdges]);
 
+  function exportTree(){
+
+    const nodesToSave = nodes.map((node) => {
+      return {
+        id: node.id,
+        position: node.position,
+        data: node.data.label.props.children[0].props.children, //Have to go quite deep to get this, should we have stored it outside the data attribute?
+        value: node.value,
+        teacher: node.teacher,
+      };
+    })
+    
+    const edgesToSave = edges.map(edge=>{
+      return {
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+      }
+    })
+    
+    const fileData = JSON.stringify({nodes: nodesToSave, edges: edgesToSave});
+    const blob = new Blob([fileData], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download= 'tree.json';
+    link.click();
+    URL.revokeObjectURL(url);
+
+  }
+
   function randValues() {
     setNodes((nds) =>
       nds.map((node) => {
@@ -309,7 +348,7 @@ export default function App() {
             padding: '0.75rem',
             minWidth: '160px',
             textAlign: 'left',
-            color:fontColour,
+            color: fontColour,
             border: '1px solid rgba(0, 0, 0, 0.1)',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
           },
@@ -378,7 +417,7 @@ export default function App() {
         },
       }))
     );
-  }, [sliderValue, baseColour, failColour, transRange,fontColour, setNodes]);
+  }, [sliderValue, baseColour, failColour, transRange, fontColour, setNodes]);
 
 
 
@@ -395,6 +434,7 @@ export default function App() {
         setFail={setFailColour}
         setTrans={setTransitionRange}
         setFontColour={setFontColour}
+        exportTree={exportTree}
       />
 
       <div className="flex-1 h-screen">
