@@ -1,8 +1,7 @@
-# React + Vite
+# Structure Viewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A short project built using tailwind, react and the 'React Flow' component.
 
-Currently, two official plugins are available:
+Mix of own code and AI. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A tree view of organisational structure, with nodes representing departments and their metrics. Sliding scale to indicate node health along with customisable options like the threshold and some minor colour/text changes.
