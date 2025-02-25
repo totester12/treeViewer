@@ -175,16 +175,24 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
               </label>
               {isAdvancedOpen && (
                 <div className="mt-2">
-                  <label className='block text-sm font-medium text-gray-700'>Threshold Boundary</label>
-                  <input className='pt-2 pb-2 text-sm text-gray-700' type='number' defaultValue={10} onChange={(e) => setTrans(Number(e.target.value))} ></input>
+                  <label className='block text-sm font-medium text-gray-700 pb-2'>Threshold Boundary</label>
+                  <input className='border-solid border-2 border-gray-300 text-sm text-gray-700' type='number' defaultValue={10} onChange={(e) => setTrans(Number(e.target.value))} ></input>
                   <br />
-                  <label className='pb-1 pt-6 font-medium text-gray-700'>Positive Colour</label>
+                  <label className='pt-2 pb-1 font-medium text-gray-700'>Positive Colour</label>
                   <br />
                   <input type='color' defaultValue="#b4f0c8" onChange={(e) => setGood(hexToRgb(e.target.value))} ></input>
                   <br />
+                  <button
+                    onClick={() => document.getElementById("colour1").value='#ffffff'}
+                    className="w-half mt-2 bg-slate-500 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors duration-200 font-medium shadow-sm"
+                  >
+                    Rotate
+                  </button>
+                  <br/>
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Negative Colour</label>
                   <br />
-                  <input type='color' defaultValue="#f09696" onChange={(e) => setFail(hexToRgb(e.target.value))} ></input>
+                  
+                  <input id='colour1' type='color' defaultValue="#f09696" onInput={(e) => setFail(hexToRgb(e.target.value))} ></input>
                   <br />
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Invert Font Colour</label>
                   <br />
@@ -304,7 +312,7 @@ export default function App() {
         teacher: node.teacher,
       };
     })
-    
+    //Side Note - edge here misses the parentheses in the map function, this is fine for one argument but if you have more than one you need to wrap them in parentheses
     const edgesToSave = edges.map(edge=>{
       return {
         id: edge.id,
