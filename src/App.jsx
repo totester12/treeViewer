@@ -88,6 +88,85 @@ const getNodeColor = (nodeValue, sliderValue, baseColour, failColour, transRange
   )`;
 };
 
+const getBorderColour = (nodeColor) => {
+  // Extract RGB values from the nodeColor string
+  const rgbMatch = nodeColor.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+  if (!rgbMatch) return nodeColor; // Return original if format doesn't match
+
+  const r = parseInt(rgbMatch[1], 10);
+  const g = parseInt(rgbMatch[2], 10);
+  const b = parseInt(rgbMatch[3], 10);
+
+  // Convert RGB to HSL for easier brightness/saturation manipulation
+  // First, normalize RGB values to [0, 1]
+  const rNorm = r / 255;
+  const gNorm = g / 255;
+  const bNorm = b / 255;
+
+  const max = Math.max(rNorm, gNorm, bNorm);
+  const min = Math.min(rNorm, gNorm, bNorm);
+  const delta = max - min;
+
+  // Calculate lightness
+  let lightness = (max + min) / 2;
+
+  // Calculate saturation
+  let saturation = 0;
+  if (delta !== 0) {
+    saturation = delta / (1 - Math.abs(2 * lightness - 1));
+  }
+
+  // Calculate hue
+  let hue = 0;
+  if (delta !== 0) {
+    if (max === rNorm) {
+      hue = ((gNorm - bNorm) / delta) % 6;
+    } else if (max === gNorm) {
+      hue = (bNorm - rNorm) / delta + 2;
+    } else {
+      hue = (rNorm - gNorm) / delta + 4;
+    }
+    hue *= 60;
+    if (hue < 0) hue += 360;
+  }
+
+  // Increase saturation and lightness for border color
+  saturation = Math.min(saturation * 0.5, 1.0); // 30% more saturated
+  lightness = Math.min(lightness * 0.7, 0.9);   // 20% brighter but not too bright
+  // Convert back to RGB
+  const hslToRgb = (h, s, l) => {
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c / 2;
+    let rTemp, gTemp, bTemp;
+
+    if (h >= 0 && h < 60) {
+      [rTemp, gTemp, bTemp] = [c, x, 0];
+    } else if (h >= 60 && h < 120) {
+      [rTemp, gTemp, bTemp] = [x, c, 0];
+    } else if (h >= 120 && h < 180) {
+      [rTemp, gTemp, bTemp] = [0, c, x];
+    } else if (h >= 180 && h < 240) {
+      [rTemp, gTemp, bTemp] = [0, x, c];
+    } else if (h >= 240 && h < 300) {
+      [rTemp, gTemp, bTemp] = [x, 0, c];
+    } else {
+      [rTemp, gTemp, bTemp] = [c, 0, x];
+    }
+
+    return [
+      Math.round((rTemp + m) * 255),
+      Math.round((gTemp + m) * 255),
+      Math.round((bTemp + m) * 255)
+    ];
+  };
+
+  const [rNew, gNew, bNew] = hslToRgb(hue, saturation, lightness);
+
+  return `rgb(${rNew}, ${gNew}, ${bNew})`;
+
+}
+
 
 const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, randValues, setGood, setFail, setTrans, setFontColour, exportTree }) => {
 
@@ -183,15 +262,15 @@ const SideMenu = ({ nodeName, setName, sliderValue, setSliderValue, addNewNode, 
                   <input type='color' defaultValue="#b4f0c8" onChange={(e) => setGood(hexToRgb(e.target.value))} ></input>
                   <br />
                   <button
-                    onClick={() => document.getElementById("colour1").value='#ffffff'}
+                    onClick={() => document.getElementById("colour1").value = '#ffffff'}
                     className="w-half mt-2 bg-slate-500 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors duration-200 font-medium shadow-sm"
                   >
                     Rotate
                   </button>
-                  <br/>
+                  <br />
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Negative Colour</label>
                   <br />
-                  
+
                   <input id='colour1' type='color' defaultValue="#f09696" onInput={(e) => setFail(hexToRgb(e.target.value))} ></input>
                   <br />
                   <label className='pb-1 pt-2 font-medium text-gray-700'>Invert Font Colour</label>
@@ -232,8 +311,8 @@ const getDescendantIds = (nodeId, edges, visited = new Set()) => {
 };
 
 export default function App() {
-  const [baseColour, setBaseColour] = useState([180, 240, 200]);
-  const [failColour, setFailColour] = useState([240, 150, 150]);
+  const [baseColour, setBaseColour] = useState([231, 250, 237]);
+  const [failColour, setFailColour] = useState([249, 213, 213]);
   const [transRange, setTransitionRange] = useState(10);
   const [fontColour, setFontColour] = useState('#1a1a1a');
 
@@ -252,12 +331,12 @@ export default function App() {
       },
       style: {
         backgroundColor: getNodeColor(node.value, 50, baseColour, failColour, transRange),
-        borderRadius: '0.75rem',
+        borderRadius: '0.35rem',
         padding: '0.75rem',
         minWidth: '160px',
         textAlign: 'left',
         color: fontColour,
-        border: '1px solid rgba(0, 0, 0, 0.1)',
+        border: '2px solid ' + getBorderColour(getNodeColor(node.value, 50, baseColour, failColour, transRange)),
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
       },
     }))
@@ -301,7 +380,7 @@ export default function App() {
     }));
   }, [nodes, edges, setNodes, setEdges]);
 
-  function exportTree(){
+  function exportTree() {
 
     const nodesToSave = nodes.map((node) => {
       return {
@@ -313,20 +392,20 @@ export default function App() {
       };
     })
     //Side Note - edge here misses the parentheses in the map function, this is fine for one argument but if you have more than one you need to wrap them in parentheses
-    const edgesToSave = edges.map(edge=>{
+    const edgesToSave = edges.map(edge => {
       return {
         id: edge.id,
         source: edge.source,
         target: edge.target,
       }
     })
-    
-    const fileData = JSON.stringify({nodes: nodesToSave, edges: edgesToSave});
-    const blob = new Blob([fileData], {type: 'text/plain'});
+
+    const fileData = JSON.stringify({ nodes: nodesToSave, edges: edgesToSave });
+    const blob = new Blob([fileData], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download= 'tree.json';
+    link.download = 'tree.json';
     link.click();
     URL.revokeObjectURL(url);
 
@@ -352,12 +431,12 @@ export default function App() {
           },
           style: {
             backgroundColor: getNodeColor(randomValue, sliderValue, baseColour, failColour, transRange),
-            borderRadius: '0.75rem',
+            borderRadius: '0.35rem',
             padding: '0.75rem',
             minWidth: '160px',
             textAlign: 'left',
             color: fontColour,
-            border: '1px solid rgba(0, 0, 0, 0.1)',
+            border: '2px solid ' + getBorderColour(getNodeColor(node.value, sliderValue, baseColour, failColour, transRange)),
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
           },
         };
@@ -387,11 +466,11 @@ export default function App() {
       style: {
         backgroundColor: getNodeColor(randomValue, sliderValue, baseColour, failColour, transRange),
         borderRadius: '0.75rem',
-        padding: '0.75rem',
+        padding: '0.35rem',
         minWidth: '160px',
         textAlign: 'left',
         color: fontColour,
-        border: '1px solid rgba(0, 0, 0, 0.1)',
+        border: '2px solid ' + getBorderColour(getNodeColor(node.value, sliderValue, baseColour, failColour, transRange)),
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
       },
     };
@@ -420,7 +499,7 @@ export default function App() {
           minWidth: '160px',
           textAlign: 'left',
           color: fontColour,
-          border: '1px solid rgba(0, 0, 0, 0.1)',
+          border: '2px solid ' + getBorderColour(getNodeColor(node.value, sliderValue, baseColour, failColour, transRange)),
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
         },
       }))
